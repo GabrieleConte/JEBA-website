@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
-import rehypeRaw from 'rehype-raw';
+//import rehypeRaw from 'rehype-raw';
 import './styles.css';
 
 interface CardProps {
@@ -22,7 +22,7 @@ const Card: React.FC<CardProps> = ({ imageUrl, description }) => {
                 <div className="card-description">
                     <ReactMarkdown
                         remarkPlugins={[remarkBreaks]}
-                        rehypePlugins={[rehypeRaw]}
+                      //  rehypePlugins={[rehypeRaw]}
                     >
                         {description}
                     </ReactMarkdown>
