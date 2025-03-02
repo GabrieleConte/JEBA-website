@@ -1,20 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import './styles.css'; // Import the CSS file for styles and animations
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
+import './styles.css';
 
 interface CardProps {
     imageUrl: string;
     description: string;
 }
 
+interface CardProps {
+    imageUrl: string;
+    description: string;
+}
 const Card: React.FC<CardProps> = ({ imageUrl, description }) => {
     return (
         <div className="card">
-            <img src={imageUrl} alt="Display" />
-            <p>{description}</p>
+            <div className="card-content">
+                <img src={imageUrl} alt="Display" className="card-image" />
+                <div className="card-description">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkBreaks]}
+                        rehypePlugins={[rehypeRaw]}
+                    >
+                        {description}
+                    </ReactMarkdown>
+                </div>
+            </div>
         </div>
     );
 };
+
+
 
 interface FileMapping {
     name: string;
@@ -27,18 +45,15 @@ interface GalleryItem {
 }
 
 const Gallery: React.FC = () => {
-    // Base names of local files stored in public/assets
     const files: FileMapping[] = [
         { name: 'test' },
         { name: 'test2' },
-        // Add more file base names as needed.
     ];
 
     const [items, setItems] = useState<GalleryItem[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
-    // Base path to your assets (public/assets)
     const basePath = '/assets/';
 
     useEffect(() => {
@@ -86,23 +101,24 @@ const Gallery: React.FC = () => {
         return <div>Loading...</div>;
     }
 
-    // Choose animation classes based on direction
-    const transitionClassNames = direction === 'next' ? 'slide' : 'slide-prev';
-
     return (
         <div className="carousel-container">
-            <button className="carousel-arrow" onClick={handlePrev}>
-                &#8592;
+            <button className="carousel-arrow left" onClick={handlePrev}>
+                &#10094;
             </button>
             <div className="carousel-card-container">
                 <TransitionGroup component={null}>
-                    <CSSTransition key={currentIndex} timeout={500} classNames={transitionClassNames}>
+                    <CSSTransition
+                        key={currentIndex}
+                        timeout={500}
+                        classNames={direction === 'next' ? 'slide' : 'slide-prev'}
+                    >
                         <Card imageUrl={items[currentIndex].imageUrl} description={items[currentIndex].description} />
                     </CSSTransition>
                 </TransitionGroup>
             </div>
-            <button className="carousel-arrow" onClick={handleNext}>
-                &#8594;
+            <button className="carousel-arrow right" onClick={handleNext}>
+                &#10095;
             </button>
         </div>
     );
