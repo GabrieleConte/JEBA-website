@@ -1,0 +1,118 @@
+/* Carousel Container */
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+/* Arrow Buttons */
+.carousel-arrow {
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 20px;
+    z-index: 1;
+}
+
+/* Card Container */
+.carousel-card-container {
+    width: 700px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Card Styling */
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: #fff;
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.card p {
+    margin-top: 10px;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+/* Slide Animation for "next" direction */
+.slide-enter {
+    opacity: 0;
+    transform: translateX(100%);
+}
+.slide-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: transform 500ms ease, opacity 500ms ease;
+}
+.slide-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+.slide-exit-active {
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: transform 500ms ease, opacity 500ms ease;
+}
+
+/* Slide Animation for "prev" direction */
+.slide-prev-enter {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+.slide-prev-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: transform 500ms ease, opacity 500ms ease;
+}
+.slide-prev-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+.slide-prev-exit-active {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: transform 500ms ease, opacity 500ms ease;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .carousel-container {
+        flex-direction: column;
+    }
+
+    .carousel-arrow {
+        font-size: 1.5rem;
+        padding: 10px;
+    }
+
+    .carousel-card-container {
+        width: 90%;
+        max-width: 400px;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-arrow {
+        font-size: 1.2rem;
+        padding: 5px;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+    }
+}

@@ -11,6 +11,7 @@ const MiddleBlock = lazy(() => import("../../components/MiddleBlock"));
 const Container = lazy(() => import("../../common/Container"));
 const ScrollToTop = lazy(() => import("../../common/ScrollToTop"));
 const ContentBlock = lazy(() => import("../../components/ContentBlock"));
+const Gallery = lazy(() => import("../../components/Gallery"));
 
 const Home = () => {
   return (
@@ -51,6 +52,7 @@ const Home = () => {
         icon="waving.svg"
         id="Experiences"
       />
+        <Gallery />
       <Contact
         title={ContactContent.title}
         content={ContactContent.text}
