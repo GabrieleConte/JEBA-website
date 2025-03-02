@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -35,7 +35,7 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "Experiencesion": [
+    "production": [
       ">0.2%",
       "not dead",
       "not op_mini all"
@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/react-transition-group": "^4.4.12"
   }
 }
