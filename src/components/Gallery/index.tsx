@@ -46,8 +46,27 @@ interface GalleryItem {
 
 const Gallery: React.FC = () => {
     const files: FileMapping[] = [
-        { name: 'test' },
-        { name: 'test2' },
+        { name: 'scan_page_1' },
+        { name: 'scan_page_2' },
+        { name: 'scan_page_3' },
+        { name: 'scan_page_4' },
+        { name: 'scan_page_5' },
+        { name: 'scan_page_6' },
+        { name: 'scan_page_7' },
+        { name: 'scan_page_8' },
+        { name: 'scan_page_9' },
+        { name: 'scan_page_10' },
+        { name: 'scan_page_11' },
+        { name: 'scan_page_12' },
+        { name: 'scan_page_13' },
+        { name: 'scan_page_14' },
+        { name: 'scan_page_15' },
+        { name: 'scan_page_16' },
+        { name: 'scan_page_17' },
+        { name: 'scan_page_18' },
+        { name: 'scan_page_19' },
+        { name: 'scan_page_20' },
+        { name: 'scan_page_21' },
     ];
 
     const [items, setItems] = useState<GalleryItem[]>([]);
