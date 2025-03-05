@@ -77,7 +77,7 @@ def convert_jpg_images_to_1024_768(jpg_path):
     img = Image.open(jpg_path)
     
     # Resize the image
-    img_resized = img.resize((1024, 768))
+    img_resized = img.resize((768, 1024))
     
     # Save the image
     img_resized.save(jpg_path)

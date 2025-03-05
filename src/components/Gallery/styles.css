@@ -5,6 +5,8 @@
     justify-content: center;
     padding: 20px;
     position: relative;
+    width: 100%;
+    overflow: hidden;
 }
 
 /* Arrow Buttons */
@@ -14,28 +16,51 @@
     border: none;
     cursor: pointer;
     padding: 0 20px;
-    z-index: 1;
+    z-index: 10;
 }
 
-/* Card Container */
-.carousel-card-container {
-    width: 700px;
+/* Carousel Multi-View Container */
+.carousel-slide-container {
+    width: 100%;
+    max-width: 1000px;
     overflow: hidden;
     position: relative;
 }
 
-/* Card Styling */
-.card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%;
-    max-width: 700px;
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+/* Multi-card Container */
+.carousel-multi-view {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Card Styling */
+.card {
+    border-radius: 8px;
+    padding: 10px;
+    margin: 0 10px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    transition: all 0.3s ease;
+    flex: 0 0 auto;
+}
+
+/* Current card (center) */
+.card.current {
+    width: 50%;
+    z-index: 5;
+    border: 1px solid #ccc;
+}
+
+/* Side cards */
+.card.side {
+    width: 25%;
+    opacity: 0.7;
+    filter: grayscale(20%);
+    z-index: 1;
+    transform: scale(0.9);
+    border: 1px solid #eee;
 }
 
 .card-content {
@@ -43,17 +68,19 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .card img {
-    width: 50%;
+    width: 100%;
     height: auto;
     border-radius: 4px;
+    object-fit: cover;
 }
 
 .card-description {
-    width: 50%;
-    padding-left: 20px;
+    width: 100%;
+    padding: 10px 0;
 }
 
 .card-description p {
@@ -62,11 +89,6 @@
     line-height: 1.4;
 }
 
-.card p {
-    margin-top: 10px;
-    font-size: 1rem;
-    line-height: 1.4;
-}
 /* Slide Animation for "next" direction */
 .slide-enter {
     transform: translateX(100%);
@@ -94,6 +116,7 @@
 .slide-prev-exit {
     display: none;
 }
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     .carousel-container {
@@ -102,13 +125,21 @@
 
     .carousel-arrow {
         font-size: 1.5rem;
-        padding: 10px;
+        padding: 5px;
     }
 
     .carousel-card-container {
         width: 90%;
         max-width: 400px;
         margin: 10px 0;
+    }
+
+    .card.current {
+        width: 60%;
+    }
+    
+    .card.side {
+        width: 20%;
     }
 }
 
@@ -120,5 +151,13 @@
 
     .card p {
         font-size: 0.9rem;
+    }
+
+    .card.side {
+        display: none; /* Option: hide side cards on small screens */
+    }
+    
+    .card.current {
+        width: 90%;
     }
 }
