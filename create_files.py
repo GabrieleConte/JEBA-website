@@ -69,6 +69,19 @@ def create_txt_file_from_jpg_name(pdf_path):
         f.write(f"Text extracted from {pdf_path}")
     
     print(f"Created {txt_path}")
+    
+    
+def convert_jpg_images_to_1024_768(jpg_path):
+    """Convert JPG images to 1024x768 resolution"""
+    # Open the image
+    img = Image.open(jpg_path)
+    
+    # Resize the image
+    img_resized = img.resize((1024, 768))
+    
+    # Save the image
+    img_resized.save(jpg_path)
+    print(f"Resized {jpg_path} to 1024x768")
 
 if __name__ == "__main__":
     # if len(sys.argv) < 2:
@@ -81,4 +94,5 @@ if __name__ == "__main__":
     for filename in os.listdir("public/assets/"):
         if filename.endswith(".jpg"):
             #convert_pdf_to_jpg(filename, output_dir)
-            create_txt_file_from_jpg_name(filename)
+            convert_jpg_images_to_1024_768(output_dir+filename)
+            #create_txt_file_from_jpg_name(filename)
