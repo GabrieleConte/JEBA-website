@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, TouchEvent } from 'react';
+import React, { useState, useEffect, useRef, TouchEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
@@ -8,11 +8,18 @@ interface CardProps {
     imageUrl: string;
     description: string;
     isCurrent: boolean;
+    onClick?: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ imageUrl, description, isCurrent }) => {
+const Card: React.FC<CardProps> = ({ imageUrl, description, isCurrent, onClick }) => {
     return (
-        <div className={`card ${isCurrent ? 'current' : 'side'}`}>
+        <div 
+            className={`card ${isCurrent ? 'current' : 'side'}`}
+            onClick={onClick}
+            role={onClick ? "button" : undefined}
+            aria-label={onClick ? "View image" : undefined}
+            tabIndex={onClick ? 0 : undefined}
+        >
             <div className="card-content">
                 <img src={imageUrl} alt="Display" className="card-image" />
                 {isCurrent && false && (
@@ -67,6 +74,7 @@ const Gallery: React.FC = () => {
     const [direction, setDirection] = useState<'next' | 'prev'>('next');
     const [isSwiping, setIsSwiping] = useState(false);
     const [swipeStartX, setSwipeStartX] = useState(0);
+    const [swipeDelta, setSwipeDelta] = useState(0);
     const carouselRef = useRef<HTMLDivElement>(null);
 
     const basePath = '/assets/';
@@ -96,9 +104,36 @@ const Gallery: React.FC = () => {
         };
 
         loadItems();
+        
+        // Create a separate handler for DOM events
+        const handleGlobalKeyDown = (e: globalThis.KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') {
+                handlePrev();
+            } else if (e.key === 'ArrowRight') {
+                handleNext();
+            }
+        };
+        
+        // Add keyboard event listener with the correct type
+        window.addEventListener('keydown', handleGlobalKeyDown);
+        
+        return () => {
+            window.removeEventListener('keydown', handleGlobalKeyDown);
+        };
     }, []);
 
+    // This handler is for React's KeyboardEvent (for the div element)
+    const handleKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'ArrowLeft') {
+            handlePrev();
+        } else if (e.key === 'ArrowRight') {
+            handleNext();
+        }
+    };
+
     const handlePrev = () => {
+        if (items.length === 0) return; // Guard against empty items
+        
         setDirection('prev');
         setCurrentIndex((prevIndex) =>
             prevIndex === 0 ? items.length - 1 : prevIndex - 1
@@ -106,15 +141,26 @@ const Gallery: React.FC = () => {
     };
 
     const handleNext = () => {
+        if (items.length === 0) return; // Guard against empty items
+        
         setDirection('next');
         setCurrentIndex((prevIndex) =>
             prevIndex === items.length - 1 ? 0 : prevIndex + 1
         );
     };
 
+    const goToIndex = (index: number) => {
+        if (index === currentIndex || items.length === 0) return;
+        
+        // Set direction based on target index
+        setDirection(index > currentIndex ? 'next' : 'prev');
+        setCurrentIndex(index);
+    };
+
     const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
         setIsSwiping(true);
         setSwipeStartX(e.touches[0].clientX);
+        setSwipeDelta(0);
     };
 
     const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
@@ -122,26 +168,32 @@ const Gallery: React.FC = () => {
         
         const currentX = e.touches[0].clientX;
         const diff = swipeStartX - currentX;
+        setSwipeDelta(diff);
         
-        // Optional: add some visual feedback during swiping
+        // Visual feedback during swiping
         if (carouselRef.current) {
-            carouselRef.current.style.transform = `translateX(${-diff * 0.1}px)`;
+            carouselRef.current.style.transform = `translateX(${-diff * 0.3}px)`;
         }
     };
 
     const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
         if (!isSwiping) return;
         
-        const endX = e.changedTouches[0].clientX;
-        const diff = swipeStartX - endX;
-        
-        // Reset any transform
+        // Reset transform with transition
         if (carouselRef.current) {
+            carouselRef.current.style.transition = 'transform 0.3s ease';
             carouselRef.current.style.transform = '';
+            
+            // Clear transition after it completes
+            setTimeout(() => {
+                if (carouselRef.current) {
+                    carouselRef.current.style.transition = '';
+                }
+            }, 300);
         }
         
-        if (Math.abs(diff) > 50) { // Threshold for swipe detection
-            if (diff > 0) {
+        if (Math.abs(swipeDelta) > 50) { // Threshold for swipe detection
+            if (swipeDelta > 0) {
                 handleNext();
             } else {
                 handlePrev();
@@ -152,53 +204,65 @@ const Gallery: React.FC = () => {
     };
 
     if (items.length === 0) {
-        return <div>Loading...</div>;
+        return <div className="carousel-loading">Loading...</div>;
     }
 
-    // Helper to get indices of previous, current, and next items
-    const getPrevIndex = () => (currentIndex === 0 ? items.length - 1 : currentIndex - 1);
-    const getNextIndex = () => (currentIndex === items.length - 1 ? 0 : currentIndex + 1);
+    // Helper to get indices of previous, current, and next items with safety checks
+    const getPrevIndex = () => (currentIndex > 0 ? currentIndex - 1 : items.length - 1);
+    const getNextIndex = () => (currentIndex < items.length - 1 ? currentIndex + 1 : 0);
 
     return (
-        <div 
-            className="carousel-container"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-        >
-            <button className="carousel-arrow left" onClick={handlePrev}>
-                &#10094;
-            </button>
-            <div className="carousel-slide-container" ref={carouselRef}>
-                <div className="carousel-multi-view">
-                    <Card 
-                        imageUrl={items[getPrevIndex()].imageUrl} 
-                        description={items[getPrevIndex()].description}
-                        isCurrent={false}
-                    />
-                    <TransitionGroup component={null}>
-                        <CSSTransition
-                            key={currentIndex}
-                            timeout={500}
-                            classNames={direction === 'next' ? 'slide' : 'slide-prev'}
-                        >
-                            <Card 
-                                imageUrl={items[currentIndex].imageUrl} 
-                                description={items[currentIndex].description}
-                                isCurrent={true}
-                            />
-                        </CSSTransition>
-                    </TransitionGroup>
-                    <Card 
-                        imageUrl={items[getNextIndex()].imageUrl} 
-                        description={items[getNextIndex()].description}
-                        isCurrent={false}
-                    />
+        <div className="carousel-wrapper">
+            <div 
+                className="carousel-container"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                tabIndex={0}
+                onKeyDown={handleKeyDown} // React keyboard event handler
+                role="region"
+                aria-label="Image gallery"
+            >
+                <div className="carousel-slide-container" ref={carouselRef}>
+                    <div className="carousel-multi-view">
+                        <Card 
+                            imageUrl={items[getPrevIndex()].imageUrl} 
+                            description={items[getPrevIndex()].description}
+                            isCurrent={false}
+                            onClick={() => goToIndex(getPrevIndex())}
+                        />
+                        <TransitionGroup component={null}>
+                            <CSSTransition
+                                key={currentIndex}
+                                timeout={500}
+                                classNames={direction === 'next' ? 'slide' : 'slide-prev'}
+                            >
+                                <Card 
+                                    imageUrl={items[currentIndex].imageUrl} 
+                                    description={items[currentIndex].description}
+                                    isCurrent={true}
+                                />
+                            </CSSTransition>
+                        </TransitionGroup>
+                        <Card 
+                            imageUrl={items[getNextIndex()].imageUrl} 
+                            description={items[getNextIndex()].description}
+                            isCurrent={false}
+                            onClick={() => goToIndex(getNextIndex())}
+                        />
+                    </div>
                 </div>
             </div>
-            <button className="carousel-arrow right" onClick={handleNext}>
-                &#10095;
-            </button>
+            
+            <div className="carousel-pagination">
+                {items.map((_, index) => (
+                    <div 
+                        key={index} 
+                        className={`pagination-dot ${index === currentIndex ? 'active' : ''}`}
+                        onClick={() => goToIndex(index)}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

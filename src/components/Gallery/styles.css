@@ -1,4 +1,12 @@
 /* Carousel Container */
+.carousel-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .carousel-container {
     display: flex;
     align-items: center;
@@ -7,16 +15,12 @@
     position: relative;
     width: 100%;
     overflow: hidden;
+    cursor: grab;
+    outline: none;
 }
 
-/* Arrow Buttons */
-.carousel-arrow {
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0 20px;
-    z-index: 10;
+.carousel-container:active {
+    cursor: grabbing;
 }
 
 /* Carousel Multi-View Container */
@@ -25,6 +29,7 @@
     max-width: 1000px;
     overflow: hidden;
     position: relative;
+    will-change: transform;
 }
 
 /* Multi-card Container */
@@ -51,6 +56,7 @@
     width: 50%;
     z-index: 5;
     border: 1px solid #ccc;
+    transform: scale(1);
 }
 
 /* Side cards */
@@ -61,6 +67,19 @@
     z-index: 1;
     transform: scale(0.9);
     border: 1px solid #eee;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.card.side:hover {
+    opacity: 0.9;
+    transform: scale(0.95);
+}
+
+/* For accessibility */
+.card.side:focus {
+    outline: 2px solid #4a90e2;
+    opacity: 0.9;
 }
 
 .card-content {
@@ -87,6 +106,28 @@
     margin-top: 10px;
     font-size: 1rem;
     line-height: 1.4;
+}
+
+/* Pagination dots */
+.carousel-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pagination-dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 5px;
+    border-radius: 50%;
+    background-color: #ccc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination-dot.active {
+    background-color: #333;
+    transform: scale(1.2);
 }
 
 /* Slide Animation for "next" direction */
@@ -141,6 +182,12 @@
     .card.side {
         width: 20%;
     }
+    
+    .pagination-dot {
+        width: 6px;
+        height: 6px;
+        margin: 0 3px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -154,10 +201,11 @@
     }
 
     .card.side {
-        display: none; /* Option: hide side cards on small screens */
+        width: 15%;
+        opacity: 0.5;
     }
     
     .card.current {
-        width: 90%;
+        width: 70%;
     }
 }
